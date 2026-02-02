@@ -3,6 +3,8 @@ import threading
 import queue
 import time
 
+FPS = 20 # 帧率
+
 class Hebb:
     def __init__(self, d_i: int, d_o: int, mu: float) -> None:
         # 8输入: 4方向食物 + 4方向障碍
@@ -136,7 +138,7 @@ class Env:
     def compute_loop(self) -> None:
         while self.running:
             self.step()
-            time.sleep(0.001)
+            time.sleep(1/FPS)
 
 env = Env(16, 20, 20, 0.1)
 
