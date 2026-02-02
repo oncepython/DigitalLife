@@ -3,7 +3,11 @@ import threading
 import queue
 import time
 
-FPS = 20 # 帧率
+FPS = 20             # 帧率
+INITIAL_ENERGY = 100 # 初始能量
+WORLD_SIZE = 16      # 世界边长
+FOOD_COUNT = 20      # 初始食物数量
+OBSTA_COUNT = 20     # 障碍物数量
 
 class Hebb:
     def __init__(self, d_i: int, d_o: int, mu: float) -> None:
@@ -33,7 +37,7 @@ class Env:
         self.agx = size // 2
         self.agy = size // 2
         self.model = Hebb(10, 4, mu)
-        self.energy = 100
+        self.energy = INITIAL_ENERGY
         self.running = True
         self.display_queue = queue.Queue(maxsize=1)
         self.step_count = 0
@@ -140,7 +144,7 @@ class Env:
             self.step()
             time.sleep(1/FPS)
 
-env = Env(16, 20, 20, 0.1)
+env = Env(WORLD_SIZE, FOOD_COUNT, 20, 0.1)
 
 compute_thread = threading.Thread(target=env.compute_loop)
 display_thread = threading.Thread(target=env.show)
