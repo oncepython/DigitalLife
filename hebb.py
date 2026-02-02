@@ -85,9 +85,8 @@ class Env:
 
         out = self.model.pred(sta)
         logits = out[:4]
-        reward = out[-1]
 
-        act = np.random.choice(len(logits), p=logits)
+        act = np.argmax(logits)
 
         moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         dx, dy = moves[act]
