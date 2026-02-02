@@ -2,12 +2,22 @@ import numpy as np
 import threading
 import queue
 import time
+import argparse
 
-FPS = 20             # 帧率
-INITIAL_ENERGY = 100 # 初始能量
-WORLD_SIZE = 16      # 世界边长
-FOOD_COUNT = 20      # 初始食物数量
-OBSTA_COUNT = 20     # 障碍物数量
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--fps", "-f", type=int, default=20, help="Max fps 最大帧率")
+parser.add_argument("--energy", "-e", type=int, default=100, help="Initial energy of the agent 智能体初始能量")
+parser.add_argument("--size", "-s", type=int, default=16, help="World size 世界边长")
+parser.add_argument("--food", "-F", type=int, default=20, help="Initial count of food 初始食物数量")
+parser.add_argument("--obsta", "-o", type=int, default=20, help="Initial count of obstacles 初始障碍物数量")
+
+args = parser.parse_args()
+FPS = args.fps
+INITIAL_ENERGY = args.energy
+WORLD_SIZE = args.size
+FOOD_COUNT = args.food
+OBSTA_COUNT = args.obsta
 
 class Hebb:
     def __init__(self, d_i: int, d_o: int, mu: float) -> None:
@@ -144,7 +154,7 @@ class Env:
             self.step()
             time.sleep(1/FPS)
 
-env = Env(WORLD_SIZE, FOOD_COUNT, 20, 0.1)
+env = Env(WORLD_SIZE, FOOD_COUNT, OBSTA_COUNT, 0.1)
 
 compute_thread = threading.Thread(target=env.compute_loop)
 display_thread = threading.Thread(target=env.show)
