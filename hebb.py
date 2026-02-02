@@ -87,7 +87,7 @@ class Env:
         logits = out[:4]
         reward = out[-1]
 
-        act = np.argmax(logits)
+        act = np.random.choice(len(logits), p=logits)
 
         moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         dx, dy = moves[act]
