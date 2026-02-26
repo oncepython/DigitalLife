@@ -6,11 +6,13 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--fps", "-f", type=int, default=20, help="Max fps 最大帧率")
-parser.add_argument("--energy", "-e", type=int, default=100, help="Initial energy of the agent 智能体初始能量")
-parser.add_argument("--size", "-s", type=int, default=16, help="World size 世界边长")
-parser.add_argument("--food", "-F", type=int, default=20, help="Initial count of food 初始食物数量")
-parser.add_argument("--obsta", "-o", type=int, default=20, help="Initial count of obstacles 初始障碍物数量")
+parser.add_argument("--fps", "-f", type=int, default=24, help="Max fps")
+parser.add_argument("--energy", "-e", type=int, default=100, help="Initial energy of the agent")
+parser.add_argument("--size", "-s", type=int, default=16, help="World size")
+parser.add_argument("--food", "-F", type=int, default=20, help="Initial count of food")
+parser.add_argument("--obsta", "-o", type=int, default=20, help="Initial count of obstacles")
+parser.add_argument("--penalty", "-p", type=float, default=5.0, help="Penalty rate to the agent when lose energy")
+parser.add_argument("--reward", "-r", type=float, default=1.0, help="Reward rate to the agent when get food")
 
 args = parser.parse_args()
 FPS = args.fps
@@ -18,6 +20,8 @@ INITIAL_ENERGY = args.energy
 WORLD_SIZE = args.size
 FOOD_COUNT = args.food
 OBSTA_COUNT = args.obsta
+PENALTY = args.penalty
+REWARD = args.reward
 
 class Hebb:
     def __init__(self, d_i: int, d_o: int, mu: float) -> None:
@@ -74,10 +78,10 @@ class Env:
     def get_perception(self) -> np.ndarray:
         """8维输入: [上食,下食,左食,右食,上障,下障,左障,右障]"""
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # 上、下、左、右
-        
+
         food_signals = [self.find_nearest(self.agx, self.agy, dx, dy, 1) for dx, dy in directions]
         obstacle_signals = [self.find_nearest(self.agx, self.agy, dx, dy, -1) for dx, dy in directions]
-        
+
         return np.array(food_signals + obstacle_signals + [np.random.random(), self.energy / 100])
 
     def step(self) -> None:
@@ -106,7 +110,7 @@ class Env:
             self.energy -= 0.2
 
         delta_e = self.energy - old_energy
-        modulation = delta_e
+        modulation = delta_e * PENALTY if delta_e < 0 else delta_e * REWARD
 
         target = np.zeros(4)
         target[act] = 1.0
